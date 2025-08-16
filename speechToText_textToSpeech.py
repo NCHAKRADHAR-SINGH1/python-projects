@@ -2,15 +2,18 @@ import streamlit as st
 import speech_recognition as sr
 from gtts import gTTS
 import tempfile
-st.title("🎤 Speech-to-Text & Text-to-Speech App")
-st.header("🗣 Speech to Text")
-if st.button("🎙 Start Recording"):
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.write("Listening... Speak now")
-        audio = r.listen(source)
-        st.write("Processing...")
 
+st.title("🎤 Speech-to-Text & Text-to-Speech App (Cloud Version)")
+
+# ---------------- Speech to Text ----------------
+st.header("🗣 Speech to Text (Upload Audio)")
+
+uploaded_file = st.file_uploader("Upload an audio file (wav or mp3):", type=["wav","mp3"])
+
+if uploaded_file is not None:
+    r = sr.Recognizer()
+    with sr.AudioFile(uploaded_file) as source:
+        audio = r.record(source)
         try:
             text = r.recognize_google(audio)
             st.success(f"Recognized Text: {text}")
@@ -29,7 +32,6 @@ if st.button("🔊 Convert to Speech"):
         tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
         tts.save(tmp_file.name)
 
-        # Read file as bytes for Streamlit
         with open(tmp_file.name, "rb") as f:
             audio_bytes = f.read()
 
